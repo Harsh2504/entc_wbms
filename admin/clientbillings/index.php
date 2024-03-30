@@ -105,6 +105,39 @@
 				<!-- Data table will be displayed here -->
 				<?php
 
+
+				function getLastEntriesWithDay30($feeds)
+				{
+					$lastEntries = array();
+
+					// Organize feeds by month
+					foreach ($feeds as $feed) {
+						$createdAt = strtotime($feed['created_at']);
+						$day = date('d', $createdAt);
+						$month = date('m', $createdAt);
+						$year = date('Y', $createdAt);
+
+						if ($day == 30) {
+							$lastEntries[$month] = array(
+								'created_at' => $feed['created_at'],
+								'entry_id' => $feed['entry_id'],
+								'field1' => $feed['field1'],
+								'field2' => $feed['field2'],
+								'field3' => $feed['field3']
+							);
+						}
+					}
+
+					// Select the last entry for each month
+					$lastEntriesByMonth = array();
+					foreach ($lastEntries as $month => $entry) {
+						$lastEntriesByMonth[$month] = $entry;
+					}
+
+					return $lastEntriesByMonth;
+				}
+
+
 				function fetchData()
 				{
 					$channelID = '2416103';
@@ -114,9 +147,36 @@
 					$response = file_get_contents($feedUrl);
 					$data = json_decode($response, true);
 
-					// Handle and use the data
-					// echo 'Data fetched: ';
-					// print_r($data);
+					$jsonData = json_encode($data, JSON_HEX_APOS);
+					$lastEntriesWithDay30 = getLastEntriesWithDay30($data['feeds']);
+
+					$vsy = calculateWaterCost($lastEntriesWithDay30['01']['field2']);
+
+					echo "<script>";
+					echo "console.log(`total data`);";
+					echo "console.log(" . json_encode($data) . ");";
+					echo "console.log('Last entries with day 30 for each month: ');";
+					echo "console.log(" . json_encode($lastEntriesWithDay30) . ");";
+					echo "console.log(`its charges`);";
+					echo "console.log(" . json_encode($vsy) . ");";
+					echo "</script>";
+
+					echo "<script>";
+					echo "document.addEventListener('DOMContentLoaded', function() {";
+					echo "    var userChargesDiv = document.querySelector('.usercharges');";
+					echo "    if (userChargesDiv) {";  // Check if userChargesDiv is not null
+					echo "        userChargesDiv.innerHTML += '<br><strong>Date:</strong><br>';";
+					echo "        userChargesDiv.innerHTML += " . json_encode($lastEntriesWithDay30['01']['created_at'], JSON_PRETTY_PRINT) . ";";
+					echo "        userChargesDiv.innerHTML += '<br><strong>Charges:</strong><br>';";
+					echo "        userChargesDiv.innerHTML += " . json_encode($vsy, JSON_PRETTY_PRINT) . ";";
+					echo "    } else {";
+					echo "        console.error('Element with class name \"usercharges\" not found.');";
+					echo "    }";
+					echo "});";
+					echo "</script>";
+
+
+
 					displayStats($data['channel'], $data['feeds']);
 				}
 
@@ -209,6 +269,14 @@
 				?>
 			</div>
 		</div>
+	</div>
+</div>
+<div>
+	<div class="usercharges">
+		<h2>Bill payment</h2>
+	</div>
+	<div>
+		<button>payy</button>
 	</div>
 </div>
 
