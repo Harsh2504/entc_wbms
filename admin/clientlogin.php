@@ -1,4 +1,8 @@
-<?php require_once ('../config.php') ?>
+<?php 
+session_start();
+require_once ('../config.php');
+?>
+
 <!DOCTYPE html>
 <html lang="en" class="" style="height: auto;">
 <?php require_once ('inc/header.php') ?>
@@ -31,6 +35,14 @@
       <div class="card-body">
         <h4 class="login-box-msg">Client Login</h4>
         <p class="login-box-msg">Please enter your credentials</p>
+        <?php
+        // Check if there's an error message in session
+        if (isset($_SESSION['error_message'])) {
+            echo '<div class="alert alert-danger" role="alert">' . $_SESSION['error_message'] . '</div>';
+            // Unset the session to remove the error message after displaying it
+            unset($_SESSION['error_message']);
+        }
+        ?>
         <form id="" action="clientLoginLogic.php" method="post">
           <div class="input-group mb-3">
             <input type="text" class="form-control" name="phone_number" autofocus placeholder="Phone Number">
@@ -49,14 +61,9 @@
             </div>
           </div>
           <div class="row">
-            <!-- <div class="col-8">
-            <a href="login.php">Admin Login Here</a>
-          </div> -->
-            <!-- /.col -->
             <div style="width:100%;">
-              <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+              <button type="submit" name="submit" class="btn btn-primary btn-block">Sign In</button>
             </div>
-            <!-- /.col -->
           </div>
         </form>
       </div>
@@ -86,7 +93,7 @@
   <script src="<?= base_url ?>plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
   <!-- AdminLTE App -->
   <script src="<?= base_url ?>dist/js/adminlte.min.js"></script>
-
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
   <script>
     $(document).ready(function () {
       end_loader();

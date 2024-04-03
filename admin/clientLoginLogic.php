@@ -2,7 +2,7 @@
 <?php
 // Establish database connection
 // Replace 'your_host', 'your_username', 'your_password', and 'your_database' with your actual database credentials
-$conn = mysqli_connect('localhost', 'root', '', 'wbms_db',3307);
+$conn = mysqli_connect('localhost', 'root', '', 'wbms_db',3306);
 
 // Check if database connection was successful
 if (!$conn) {
@@ -33,17 +33,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // If credentials match, redirect to home.php
             header("Location: clienthome.php");
             exit;
-        } else {
+        }  else {
             // If password is incorrect, show error message
-            $error_message = "Invalid password";
-            error_log($error_message, 0);
-            echo $error_message;
+            $_SESSION['error_message'] = "Invalid password";
+            header("Location: clientlogin.php");
+            exit;
         }
     } else {
         // If phone number does not exist, show error message
-        $error_message = "Phone number not found";
-        error_log($error_message, 0);
-        echo $error_message;
+        // $error_message = "Phone number not found";
+        // error_log($error_message, 0);
+        // echo $error_message;
+        header("Location: error404.php");
     }
 
     // Close database connection

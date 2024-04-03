@@ -72,7 +72,7 @@
                    
                     <li class="nav-header">Main</li>
                     <li class="nav-item dropdown">
-                      <a href="http://localhost/entc_wbms/admin/?page=clientbillings" class="nav-link nav-clients active bg-gradient-primary">
+                      <a href="http://localhost/entc_wbms/admin/?page=clientbillings" class="nav-link nav-clients">
 					  <i class="nav-icon fas fa-th-list"></i>
                         <p>
                           Daily Usage
@@ -80,7 +80,7 @@
                       </a>
                     </li>
                     <li class="nav-item dropdown">
-                      <a href="http://localhost/entc_wbms/admin/?page=monthlybill" class="nav-link nav-billings ">
+                      <a href="http://localhost/entc_wbms/admin/?page=monthlybill" class="nav-link nav-billings active bg-gradient-primary">
                         <i class="nav-icon fas fa-file-invoice"></i>
                         <p>
                           Monthly Bill
@@ -144,7 +144,7 @@
 <div class="card card-outline rounded-0 card-navy">
 	<div class="card-header">
 		<div class="card-header">
-			<h3 class="card-title">List of Bill</h3>
+			<h3 class="card-title">Bill Payments</h3>
 			<div id="dataContainer">
 				<!-- Data table will be displayed here -->
 				<?php
@@ -209,7 +209,7 @@
 					echo "document.addEventListener('DOMContentLoaded', function() {";
 					echo "    var userChargesDiv = document.querySelector('.usercharges');";
 					echo "    if (userChargesDiv) {";  // Check if userChargesDiv is not null
-					echo "        userChargesDiv.innerHTML += '<br><strong>Date:</strong><br>';";
+					echo "        userChargesDiv.innerHTML += '<strong>Date:</strong><br>';";
 					echo "        userChargesDiv.innerHTML += " . json_encode($lastEntriesWithDay30['01']['created_at'], JSON_PRETTY_PRINT) . ";";
 					echo "        userChargesDiv.innerHTML += '<br><strong>Charges:</strong><br>';";
 					echo "        userChargesDiv.innerHTML += " . json_encode($vsy, JSON_PRETTY_PRINT) . ";";
@@ -221,44 +221,10 @@
 
 
 
-					displayStats($data['channel'], $data['feeds']);
+					
 				}
 
-				function displayStats($channelData, $feeds)
-				{
-					echo "
-      <div>
-	  <br>
-        <h5>Channel Stats</h5>
-        <p>Last entry: " . date('Y-m-d H:i:s', strtotime($channelData['updated_at'])) . "</p>
-        <p>Entries: {$channelData['last_entry_id']}</p>
-      </div>
-    ";
-
-					// Create a Bootstrap table
-					echo "
-      <table class='table mt-4'>
-        <thead>
-          <tr>
-            <th>Entry ID</th>
-            <th>Bill</th>
-            <th>Units</th>
-            <th>Valve</th>
-            <th>Created At</th>
-          </tr>
-        </thead>
-        <tbody>
-    ";
-
-					foreach ($feeds as $feed) {
-						echo createTableRow($feed);
-					}
-
-					echo "
-        </tbody>
-      </table>
-    ";
-				}
+			
 
 				function formatIndianCurrency($value)
 				{
@@ -311,12 +277,24 @@
 				fetchData();
 
 				?>
+        
 			</div>
-		</div>
+      <br>
+      <br>
+      <div class="usercharges">
+
 	</div>
+	<div>
+		<button class="mt-2 btn btn-outline-success">Pay</button>
+	</div>
+		</div>
+    
+	</div>
+  
 </div>
+
 <div>
-	
+
 </div>
 
 <script>
