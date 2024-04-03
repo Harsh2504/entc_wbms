@@ -12,7 +12,18 @@
      <?php $page = isset($_GET['page']) ? $_GET['page'] : 'home';  ?>
       <!-- Content Wrapper. Contains page content -->
       <div class="content-wrapper  pt-3" style="min-height: 567.854px;">
-     
+      <?php
+
+
+if(isset($_GET['phone_number'])) {
+    $phone_number = $_GET['phone_number'];
+} else {
+    header("Location: error404.php");
+    exit;
+}
+
+
+?>
         <!-- Main content -->
         <section class="content  text-dark">
           <div class="container-fluid">

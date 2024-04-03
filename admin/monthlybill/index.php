@@ -1,3 +1,50 @@
+<?php
+
+
+if(isset($_GET['phone_number'])) {
+    $phone_number = $_GET['phone_number'];
+} else {
+    header("Location: error404.php");
+    exit;
+}
+
+
+?>
+<?php
+// Assuming $conn is your database connection object
+
+// Escape the contact number to prevent SQL injection
+$contact = $conn->real_escape_string($phone_number);
+
+// Construct the SQL query
+$sql = "SELECT firstname, lastname FROM client_list WHERE contact = '$contact'";
+
+// Execute the query
+$result = $conn->query($sql);
+
+// Check if the query was successful
+if ($result) {
+    // Fetch the result as an associative array
+    $row = $result->fetch_assoc();
+    
+    // Check if any rows were returned
+    if ($row) {
+        // Retrieve firstname and lastname from the result
+        $firstname = $row['firstname'];
+        $lastname = $row['lastname'];
+        
+        $fullname = $firstname . " " . $lastname;
+    } else {
+        echo "No matching records found.";
+    }
+} else {
+    // Query execution failed, handle the error
+    echo "Error executing query: " . $conn->error;
+}
+
+// Close the database connection
+$conn->close();
+?>
 <?php if ($_settings->chk_flashdata('success')): ?>
 	<script>
 		alert_toast("<?php echo $_settings->flashdata('success') ?>", 'success')
@@ -11,7 +58,7 @@
           <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
           </li>
           <li class="nav-item d-none d-sm-inline-block">
-            <a href="http://localhost/entc_wbms/" class="nav-link">Water Billing Management System - Client</a>
+            <a href="http://localhost/entc_wbms/admin/clientlogin.php" class="nav-link">Water Billing Management System - Client</a>
           </li>
         </ul>
         <!-- Right navbar links -->
@@ -51,6 +98,7 @@
         <a href="http://localhost/entc_wbms/admin" class="brand-link bg-gradient-primary text-sm">
         <img src="http://localhost/entc_wbms/uploads/logo.png?v=1651282049" alt="Store Logo" class="brand-image img-circle elevation-3 bg-gradient-light" style="opacity: .8;width: 1.5rem;height: 1.5rem;max-height: unset">
         <span class="brand-text font-weight-light">WBMS - PHP</span>
+        
         </a>
         <!-- Sidebar -->
         <div class="sidebar os-host os-theme-light os-host-overflow os-host-overflow-y os-host-resize-disabled os-host-transition os-host-scrollbar-horizontal-hidden">
@@ -68,11 +116,15 @@
                 <div class="clearfix"></div>
                 <!-- Sidebar Menu -->
                 <nav class="mt-4">
+                <div class="clientname brand-text" style="color:#ccd0d7; text-align:center; padding:10px; font-size:15px; font-weight:bold;">
+                    Welcome, <?php echo $fullname; ?>
+                  <br><small>Contact : <?php echo $contact; ?></small>
+                  </div>
                    <ul class="nav nav-pills nav-sidebar flex-column text-sm nav-compact nav-flat nav-child-indent nav-collapse-hide-child" data-widget="treeview" role="menu" data-accordion="false">
                    
                     <li class="nav-header">Main</li>
                     <li class="nav-item dropdown">
-                      <a href="http://localhost/entc_wbms/admin/?page=clientbillings" class="nav-link nav-clients">
+                      <a href="http://localhost/entc_wbms/admin/?page=clientbillings&phone_number=<?php echo urlencode($phone_number); ?>" class="nav-link nav-clients">
 					  <i class="nav-icon fas fa-th-list"></i>
                         <p>
                           Daily Usage
@@ -80,7 +132,7 @@
                       </a>
                     </li>
                     <li class="nav-item dropdown">
-                      <a href="http://localhost/entc_wbms/admin/?page=monthlybill" class="nav-link nav-billings active bg-gradient-primary">
+                      <a href="http://localhost/entc_wbms/admin/?page=monthlybill&phone_number=<?php echo urlencode($phone_number); ?>"  class="nav-link nav-billings active bg-gradient-primary">
                         <i class="nav-icon fas fa-file-invoice"></i>
                         <p>
                           Monthly Bill
@@ -194,8 +246,8 @@
 					$jsonData = json_encode($data, JSON_HEX_APOS);
 					$lastEntriesWithDay30 = getLastEntriesWithDay30($data['feeds']);
 
-					$vsy = calculateWaterCost($lastEntriesWithDay30['01']['field2']);
-
+					$waterCost = calculateWaterCost($lastEntriesWithDay30['01']['field2']);
+					$vsy = formatIndianCurrency($waterCost);
 					echo "<script>";
 					echo "console.log(`total data`);";
 					echo "console.log(" . json_encode($data) . ");";
@@ -234,26 +286,15 @@
 
 				function calculateWaterCost($field2Value)
 				{
-					$waterCostRanges = [
-						['min' => 0, 'max' => 100, 'rate' => 0.05],
-						['min' => 101, 'max' => 200, 'rate' => 0.25],
-						['min' => 201, 'max' => 300, 'rate' => 0.50],
-						['min' => 301, 'max' => 400, 'rate' => 0.75],
-						['min' => 401, 'max' => INF, 'rate' => 0.88],
-					];
-
+					// Convert field2Value to float
 					$waterConsumption = floatval($field2Value);
-					$waterCost = 0;
-
-					foreach ($waterCostRanges as $range) {
-						if ($waterConsumption >= $range['min'] && $waterConsumption <= $range['max']) {
-							$waterCost = $waterConsumption * $range['rate'];
-							break;
-						}
-					}
-
+				
+					// Multiply waterConsumption by 0.10 (10% rate)
+					$waterCost = $waterConsumption * 0.10;
+				
 					return $waterCost;
 				}
+				
 
 				function createTableRow($feed)
 				{

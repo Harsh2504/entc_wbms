@@ -31,7 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Check if the password matches the static password ('123456')
         if ($password == '123456') {
             // If credentials match, redirect to home.php
-            header("Location: clienthome.php");
+            header("Location: clienthome.php?phone_number=" . urlencode($phone_number));
             exit;
         }  else {
             // If password is incorrect, show error message
