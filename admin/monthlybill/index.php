@@ -139,6 +139,14 @@ $conn->close();
                         </p>
                       </a>
                     </li>
+                    <li class="nav-item dropdown">
+                      <a href="http://localhost/entc_wbms/admin/clientlogin.php"  class="nav-link nav-billings ">
+                      <i class="nav-icon fas fa-sign-out-alt"></i>
+                        <p>
+                          Logout
+                        </p>
+                      </a>
+                    </li>
                     <!-- <li class="nav-header">Reports</li>
                     <li class="nav-item dropdown">
                       <a href="http://localhost/entc_wbms/admin/?page=reports/monthly_billing" class="nav-link nav-reports_monthly_billing">

@@ -1,15 +1,21 @@
 -- phpMyAdmin SQL Dump
--- version 5.1.3
+-- version 5.1.1
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 02, 2022 at 09:17 AM
--- Server version: 10.4.24-MariaDB
--- PHP Version: 8.1.5
+-- Generation Time: Apr 03, 2024 at 09:56 PM
+-- Server version: 10.4.22-MariaDB
+-- PHP Version: 7.4.27
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
 
 --
 -- Database: `wbms_db`
@@ -41,7 +47,7 @@ CREATE TABLE `billing_list` (
 
 INSERT INTO `billing_list` (`id`, `client_id`, `reading_date`, `due_date`, `reading`, `previous`, `rate`, `total`, `status`, `date_created`, `date_updated`) VALUES
 (1, 1, '2022-04-01', '2022-04-15', 1100.00, 1001.00, 10.75, 1064.25, 1, '2022-05-02 15:14:03', '2022-05-02 15:14:03'),
-(2, 1, '2022-05-02', '2022-05-15', 1189.00, 1100.00, 10.75, 956.75, 1, '2022-05-02 15:14:27', '2022-05-02 15:14:27');
+(2, 1, '2022-05-02', '2022-05-15', 1189.00, 1100.00, 10.75, 956.75, 0, '2022-05-02 15:14:27', '2024-04-03 14:51:40');
 
 -- --------------------------------------------------------
 
@@ -94,7 +100,25 @@ CREATE TABLE `client_list` (
 --
 
 INSERT INTO `client_list` (`id`, `code`, `category_id`, `firstname`, `middlename`, `lastname`, `contact`, `address`, `meter_code`, `first_reading`, `status`, `delete_flag`, `date_created`, `date_updated`) VALUES
-(1, '202205020001', 1, 'Mark', 'D', 'Cooper', '09123456789', 'Sample Address', '123456', 1001.00, 1, 0, '2022-05-02 15:13:35', '2022-05-02 15:13:35');
+(1, '202205020001', 1, 'Mark', 'D', 'Cooper', '09123456789', 'Sample Address', '123456', 1001.00, 1, 0, '2022-05-02 15:13:35', '2022-05-02 15:13:35'),
+(2, '202403120001', 1, 'Harshvardhan', 'Yashwant', 'Patil', '7248236027', 'Last building , Amrut complex , near chavan steel , shiroli Phata , shiroli (p), kolhapur 416122', '1212', 1212.00, 1, 0, '2024-03-12 07:19:01', '2024-03-12 07:19:01'),
+(3, '202404040001', 1, 'Yash', '', 'Ainapure', '7799123443', 'Last building , Amrut complex , near chavan steel , shiroli Phata , shiroli (p), kolhapur 416122', '1213', 123.00, 1, 0, '2024-04-04 01:13:29', '2024-04-04 01:13:29');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `pending_bills`
+--
+
+CREATE TABLE `pending_bills` (
+  `id` int(11) NOT NULL,
+  `name` text NOT NULL,
+  `unit` int(11) NOT NULL,
+  `amount` int(11) NOT NULL,
+  `billdate` date NOT NULL,
+  `paymentdate` date NOT NULL,
+  `paidflag` tinyint(1) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -146,7 +170,7 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `firstname`, `middlename`, `lastname`, `username`, `password`, `avatar`, `last_login`, `type`, `date_added`, `date_updated`) VALUES
 (1, 'Adminstrator', NULL, 'Admin', 'admin', '0192023a7bbd73250516f069df18b500', 'uploads/avatars/1.png?v=1649834664', NULL, 1, '2021-01-20 14:02:37', '2022-04-13 15:24:24'),
-(3, 'John', NULL, 'Smith', 'jsmith', '1254737c076cf867dc53d60a0364f38e', 'uploads/avatars/3.png?v=1650527149', NULL, 2, '2022-04-21 15:45:49', '2022-04-21 15:46:23');
+(3, 'John', NULL, 'Smith', 'jsmith', '1254737c076cf867dc53d60a0364f38e', 'uploads/avatars/3.png?v=1650527149', NULL, 2, '2022-04-21 15:45:49', '2024-03-12 07:05:14');
 
 --
 -- Indexes for dumped tables
@@ -171,6 +195,12 @@ ALTER TABLE `category_list`
 ALTER TABLE `client_list`
   ADD PRIMARY KEY (`id`),
   ADD KEY `category_id` (`category_id`);
+
+--
+-- Indexes for table `pending_bills`
+--
+ALTER TABLE `pending_bills`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `system_info`
@@ -204,7 +234,13 @@ ALTER TABLE `category_list`
 -- AUTO_INCREMENT for table `client_list`
 --
 ALTER TABLE `client_list`
-  MODIFY `id` int(30) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(30) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `pending_bills`
+--
+ALTER TABLE `pending_bills`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `system_info`
@@ -234,3 +270,7 @@ ALTER TABLE `billing_list`
 ALTER TABLE `client_list`
   ADD CONSTRAINT `category_id_fk_cl` FOREIGN KEY (`category_id`) REFERENCES `category_list` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
 COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
