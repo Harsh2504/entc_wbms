@@ -334,7 +334,8 @@ $conn->close();
 
 	</div>
 	<div>
-		<button class="mt-2 btn btn-outline-success">Pay</button>
+    
+  <a href="http://localhost/entc_wbms/admin/monthlybill/payment.php"  class="nav-link nav-billings "><button class="mt-2 btn btn-outline-success launch"data-toggle="modal" data-target="#staticBackdrop"> <i class="fa fa-rocket"></i>  Pay</button></a>
 	</div>
 		</div>
     
