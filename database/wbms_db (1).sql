@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 03, 2024 at 09:56 PM
+-- Generation Time: Apr 06, 2024 at 05:01 AM
 -- Server version: 10.4.22-MariaDB
 -- PHP Version: 7.4.27
 
@@ -102,7 +102,8 @@ CREATE TABLE `client_list` (
 INSERT INTO `client_list` (`id`, `code`, `category_id`, `firstname`, `middlename`, `lastname`, `contact`, `address`, `meter_code`, `first_reading`, `status`, `delete_flag`, `date_created`, `date_updated`) VALUES
 (1, '202205020001', 1, 'Mark', 'D', 'Cooper', '09123456789', 'Sample Address', '123456', 1001.00, 1, 0, '2022-05-02 15:13:35', '2022-05-02 15:13:35'),
 (2, '202403120001', 1, 'Harshvardhan', 'Yashwant', 'Patil', '7248236027', 'Last building , Amrut complex , near chavan steel , shiroli Phata , shiroli (p), kolhapur 416122', '1212', 1212.00, 1, 0, '2024-03-12 07:19:01', '2024-03-12 07:19:01'),
-(3, '202404040001', 1, 'Yash', '', 'Ainapure', '7799123443', 'Last building , Amrut complex , near chavan steel , shiroli Phata , shiroli (p), kolhapur 416122', '1213', 123.00, 1, 0, '2024-04-04 01:13:29', '2024-04-04 01:13:29');
+(3, '202404040001', 1, 'Yash', '', 'Ainapure', '7799123443', 'Last building , Amrut complex , near chavan steel , shiroli Phata , shiroli (p), kolhapur 416122', '1213', 123.00, 1, 0, '2024-04-04 01:13:29', '2024-04-04 01:13:29'),
+(4, '202404060001', 1, 'Pruthviraj', '', 'Sawant', '9322793132', 'Mukht Sainik ,Kolhapur', '1214', 546.00, 1, 0, '2024-04-05 21:44:57', '2024-04-05 21:44:57');
 
 -- --------------------------------------------------------
 
@@ -113,12 +114,29 @@ INSERT INTO `client_list` (`id`, `code`, `category_id`, `firstname`, `middlename
 CREATE TABLE `pending_bills` (
   `id` int(11) NOT NULL,
   `name` text NOT NULL,
+  `meter_code` int(11) NOT NULL,
   `unit` int(11) NOT NULL,
   `amount` int(11) NOT NULL,
   `billdate` date NOT NULL,
-  `paymentdate` date NOT NULL,
+  `dueDate` date DEFAULT NULL,
+  `paymentdate` date DEFAULT NULL,
   `paidflag` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `pending_bills`
+--
+
+INSERT INTO `pending_bills` (`id`, `name`, `meter_code`, `unit`, `amount`, `billdate`, `dueDate`, `paymentdate`, `paidflag`) VALUES
+(25, 'Harshvardhan Patil', 1212, 3950, 395, '2024-01-31', '2024-02-05', NULL, 0),
+(26, 'Harshvardhan Patil', 1212, 3329, 333, '2024-02-29', '2024-03-05', NULL, 0),
+(27, 'Harshvardhan Patil', 1212, 3782, 378, '2024-03-31', '2024-04-05', NULL, 0),
+(28, 'Yash Ainapure', 1213, 3950, 395, '2024-01-31', '2024-02-05', NULL, 0),
+(29, 'Yash Ainapure', 1213, 3329, 333, '2024-02-29', '2024-03-05', NULL, 0),
+(30, 'Yash Ainapure', 1213, 3782, 378, '2024-03-31', '2024-04-05', NULL, 0),
+(31, 'Pruthviraj Sawant', 1214, 3950, 395, '2024-01-31', '2024-02-05', NULL, 0),
+(32, 'Pruthviraj Sawant', 1214, 3329, 333, '2024-02-29', '2024-03-05', NULL, 0),
+(33, 'Pruthviraj Sawant', 1214, 3782, 378, '2024-03-31', '2024-04-05', NULL, 0);
 
 -- --------------------------------------------------------
 
@@ -200,7 +218,8 @@ ALTER TABLE `client_list`
 -- Indexes for table `pending_bills`
 --
 ALTER TABLE `pending_bills`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id` (`id`);
 
 --
 -- Indexes for table `system_info`
@@ -234,13 +253,13 @@ ALTER TABLE `category_list`
 -- AUTO_INCREMENT for table `client_list`
 --
 ALTER TABLE `client_list`
-  MODIFY `id` int(30) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(30) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `pending_bills`
 --
 ALTER TABLE `pending_bills`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
 
 --
 -- AUTO_INCREMENT for table `system_info`

@@ -17,7 +17,7 @@ if (isset($_GET['phone_number'])) {
 $contact = $conn->real_escape_string($phone_number);
 
 // Construct the SQL query
-$sql = "SELECT firstname, lastname FROM client_list WHERE contact = '$contact'";
+$sql = "SELECT * FROM client_list WHERE contact = '$contact'";
 
 // Execute the query
 $result = $conn->query($sql);
@@ -34,6 +34,13 @@ if ($result) {
     $lastname = $row['lastname'];
 
     $fullname = $firstname . " " . $lastname;
+    $meter_code = $row['meter_code'];
+    $check_status = $row['status'];
+    if ($check_status == 1) {
+      $status = "Active";
+    } else {
+      $status = "Inactive";
+    }
   } else {
     echo "No matching records found.";
   }
@@ -126,7 +133,13 @@ $conn->close();
               <?php echo $fullname; ?>
               <br><small>Contact :
                 <?php echo $contact; ?>
+              </small><br><small>Meter Code :
+                <?php echo $meter_code; ?>
               </small>
+              <br><small>Status :
+                <?php echo $status; ?>
+              </small>
+          
             </div>
             <ul
               class="nav nav-pills nav-sidebar flex-column text-sm nav-compact nav-flat nav-child-indent nav-collapse-hide-child"
@@ -358,14 +371,67 @@ $conn->close();
       </div>
       <br>
       <br>
-      <div class="usercharges">
+      <!-- <div class="usercharges">
+
+      </div> -->
+      <div class="bills">
+      <?php
+// Assuming $conn is your database connection object
+//db connection 
+$host = 'localhost'; // Your database host
+$dbname = 'wbms_db'; // Your database name
+$username = 'root'; // Your database username
+$password = ''; // Your database password
+
+// Create a new mysqli instance
+//port:3306
+$dbConnection = new mysqli($host, $username, $password, $dbname, 3306);
+
+// Check connection
+if ($dbConnection->connect_error) {
+    die("Connection failed: " . $dbConnection->connect_error);
+}
+
+// Fetch data from pending_bills for a specific fullname where paidflag is 0
+$sql = "SELECT id, name, unit, amount, billdate, dueDate FROM pending_bills WHERE name = ? AND paidflag = 0";
+$stmt = $dbConnection->prepare($sql);
+$stmt->bind_param("s", $fullname);
+$stmt->execute();
+$result = $stmt->get_result();
+$stmt->close();
+
+// Check if there are any matching records
+if ($result->num_rows > 0) {
+    // Display data in a table
+    echo "<table  class='table mt-4'>";
+    echo "<tr><th>Name</th><th>Unit</th><th>Amount</th><th>Bill Date</th><th>Due Date</th><th>Payment</th></tr>";
+    while ($row = $result->fetch_assoc()) {
+        echo "<tr>";
+        echo "<td>" . $row['name'] . "</td>";
+        echo "<td>" . $row['unit'] . "</td>";
+        echo "<td>" . $row['amount'] . "</td>";
+        echo "<td>" . $row['billdate'] . "</td>";
+        echo "<td>" . $row['dueDate'] . "</td>";
+        // Adding pay button with a form to pass ID
+        echo "<td>";
+        echo "<form id='paymentForm_" . $row['id'] . "' method='POST' action='http://localhost/entc_wbms/admin/monthlybill/payment.php?id=" . $row['id'] . "'>";
+        echo "<input type='hidden' name='id' value='" . $row['id'] . "' />";
+        echo "<button type='submit' class='btn btn-outline-success'><i class='fa fa-rocket'></i> Pay</button>";
+        echo "</form>";
+        echo "</td>";
+        echo "</tr>";
+    }
+    echo "</table>";
+} else {
+    echo "No pending bills found for $fullname.";
+}
+?>
+
 
       </div>
       <div>
 
-        <a href="http://localhost/entc_wbms/admin/monthlybill/payment.php" class="nav-link nav-billings "><button
-            class="mt-2 btn btn-outline-success launch" data-toggle="modal" data-target="#staticBackdrop"> <i
-              class="fa fa-rocket"></i> Pay</button></a>
+   
       </div>
     </div>
 

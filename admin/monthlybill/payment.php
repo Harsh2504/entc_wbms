@@ -26,6 +26,53 @@
                                 } body{height: 100vh;justify-content: center;align-items: center;display: flex;background-color: #eee}.launch{height: 50px}.close{font-size: 21px;cursor: pointer}.modal-body{height: 450px}.nav-tabs{border:none !important}.nav-tabs .nav-link.active{color: #495057;background-color: #fff;border-color: #ffffff #ffffff #fff;border-top: 3px solid blue !important}.nav-tabs .nav-link{margin-bottom: -1px;border: 1px solid transparent;border-top-left-radius: 0rem;border-top-right-radius: 0rem;border-top: 3px solid #eee;font-size: 20px}.nav-tabs .nav-link:hover{border-color: #e9ecef #ffffff #ffffff}.nav-tabs{display: table !important;width: 100%}.nav-item{display: table-cell}.form-control{border-bottom: 1px solid #eee !important;border:none;font-weight: 600}.form-control:focus{color: #495057;background-color: #fff;border-color: #8bbafe;outline: 0;box-shadow: none}.inputbox{position: relative;margin-bottom: 20px;width: 100%}.inputbox span{position: absolute;top:7px;left: 11px;transition: 0.5s}.inputbox i{position: absolute;top: 13px;right: 8px;transition: 0.5s;color: #3F51B5}input::-webkit-outer-spin-button, input::-webkit-inner-spin-button{-webkit-appearance: none;margin: 0}.inputbox input:focus~span{transform: translateX(-0px) translateY(-15px);font-size: 12px}.inputbox input:valid~span{transform: translateX(-0px) translateY(-15px);font-size: 12px}.pay button{height: 47px;border-radius: 37px}</style>
                                 </head>
                                 <body className='snippet-body'>
+                                <?php
+// Retrieve the id value from the URL
+$id = $_GET['id'];
+
+// Assuming $conn is your database connection object
+//db connection 
+$host = 'localhost'; // Your database host
+$dbname = 'wbms_db'; // Your database name
+$username = 'root'; // Your database username
+$password = ''; // Your database password
+
+// Create a new mysqli instance
+//port:3306
+$dbConnection = new mysqli($host, $username, $password, $dbname, 3306);
+
+// Check connection
+if ($dbConnection->connect_error) {
+    die("Connection failed: " . $dbConnection->connect_error);
+}
+
+// Prepare and execute a query to fetch data from pending_bills based on the id
+$sql = "SELECT * FROM pending_bills WHERE id = ?";
+$stmt = $dbConnection->prepare($sql);
+$stmt->bind_param("i", $id);
+$stmt->execute();
+$result = $stmt->get_result();
+
+// Check if there are any matching records
+if ($result->num_rows > 0) {
+    // Fetch and display data
+    while ($row = $result->fetch_assoc()) {
+        echo "<p>Name: " . $row['name'] . "</p> <br>";
+        echo "<p>Unit: " . $row['unit'] . "</p> <br>";
+        echo "<p>Amount: " . $row['amount'] . "</p> <br>";
+        echo "<p>Bill Date: " . $row['billdate'] . "</p> <br>";
+        echo "<p>Due Date: " . $row['dueDate'] . "</p><br>
+        <br>";
+        // Display other fields as needed
+    }
+} else {
+    echo "No record found for the provided ID.";
+}
+
+$stmt->close();
+$dbConnection->close();
+?>
+
                                 <button type="button" class="btn btn-primary launch" data-toggle="modal" data-target="#staticBackdrop"> <i class="fa fa-rocket"></i> Pay Now
 </button>
 <!-- Modal -->

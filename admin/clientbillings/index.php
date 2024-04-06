@@ -16,7 +16,7 @@ if (isset($_GET['phone_number'])) {
 $contact = $conn->real_escape_string($phone_number);
 
 // Construct the SQL query
-$sql = "SELECT firstname, lastname FROM client_list WHERE contact = '$contact'";
+$sql = "SELECT * FROM client_list WHERE contact = '$contact'";
 
 // Execute the query
 $result = $conn->query($sql);
@@ -33,6 +33,14 @@ if ($result) {
     $lastname = $row['lastname'];
 
     $fullname = $firstname . " " . $lastname;
+
+    $meter_code = $row['meter_code'];
+    $check_status = $row['status'];
+    if ($check_status == 1) {
+      $status = "Active";
+    } else {
+      $status = "Inactive";
+    }
   } else {
     echo "No matching records found.";
   }
@@ -126,6 +134,11 @@ $conn->close();
               <?php echo $fullname; ?>
               <br><small>Contact :
                 <?php echo $contact; ?>
+              </small> <br><small>Meter Code :
+                <?php echo $meter_code; ?>
+              </small>
+              <br><small>Status :
+                <?php echo $status; ?>
               </small>
             </div>
             <ul
@@ -255,21 +268,21 @@ $conn->close();
           return $lastEntriesByMonth;
         }
 
-
-        
         function insertLastEntriesToPendingBills($lastEntries, $dbConnection) {
+          global $fullname, $meter_code;
           foreach ($lastEntries as $entry) {
               // Extracting necessary values from the entry
               $createdAt = substr($entry['created_at'], 0, 10);
               $unit = (int)$entry['field2'];
               $amount = calculateWaterCost($unit);
               $billDate = date('Y-m-d', strtotime($createdAt));
-              $paymentDate = date('Y-m-d', strtotime($createdAt . ' +5 days'));
+              $dueDate = date('Y-m-d', strtotime($createdAt . ' +5 days'));
+              $paymentDate = null;
               $entryId = $entry['entry_id'];
       
-              // Check if the entry already exists in the database based on billdate
-              $stmt = $dbConnection->prepare("SELECT COUNT(*) FROM pending_bills WHERE billdate = ?");
-              $stmt->bind_param("s", $billDate);
+              // Check if the entry already exists in the database based on name and bill date
+              $stmt = $dbConnection->prepare("SELECT COUNT(*) FROM pending_bills WHERE name = ? AND billdate = ?");
+              $stmt->bind_param("ss", $fullname, $billDate);
               $stmt->execute();
               $stmt->bind_result($count);
               $stmt->fetch();
@@ -277,13 +290,17 @@ $conn->close();
       
               // If no matching records are found, proceed with insertion
               if ($count == 0) {
-                  // Insert data into database
-                  $stmt = $dbConnection->prepare("INSERT INTO pending_bills (name, unit, amount, billdate, paymentdate, paidflag) VALUES (?, ?, ?, ?, ?, 0)");
-                  $stmt->bind_param("sdsss", $entryId, $unit, $amount, $billDate, $paymentDate);
-                  $stmt->execute();
-              }
+                // Insert data into database
+                $stmt = $dbConnection->prepare("INSERT INTO pending_bills (name, meter_code, unit, amount, billdate, dueDate, paymentdate, paidflag) VALUES (?, ?, ?, ?, ?, ?, ?, 0)");
+                $stmt->bind_param("ssdssss", $fullname, $meter_code, $unit, $amount, $billDate, $dueDate, $paymentDate);
+                $stmt->execute();
+                $stmt->close();
+            }
+            
           }
       }
+      
+      
       
       
             
@@ -332,7 +349,8 @@ $conn->close();
         $password = ''; // Your database password
         
         // Create a new mysqli instance
-        $dbConnection = new mysqli($host, $username, $password, $dbname, 3307);
+        //port:3306
+        $dbConnection = new mysqli($host, $username, $password, $dbname, 3306);
 
         // Check connection
         if ($dbConnection->connect_error) {
@@ -357,9 +375,8 @@ $conn->close();
           $lastEntriesWithDay30 = getLastEntriesWithDay30($data['feeds']);
 
           insertLastEntriesToPendingBills($lastEntriesWithDay30, $dbConnection);
-
           $vsy = calculateWaterCost($lastEntriesWithDay30['02']['field2']);
-
+     
           echo "<script>";
           echo "console.log(`total data`);";
           echo "console.log(" . json_encode($data) . ");";
