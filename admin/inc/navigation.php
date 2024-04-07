@@ -48,15 +48,15 @@
                         </p>
                       </a>
                     </li>
-                    <li class="nav-header">Reports</li>
-                    <li class="nav-item dropdown">
+                    <!-- <li class="nav-header">Reports</li> -->
+                    <!-- <li class="nav-item dropdown">
                       <a href="<?php echo base_url ?>admin/?page=reports/monthly_billing" class="nav-link nav-reports_monthly_billing">
                         <i class="nav-icon fas fa-circle"></i>
                         <p>
                           Monthly Report
                         </p>
                       </a>
-                    </li>
+                    </li> -->
                     <?php if($_settings->userdata('type') == 1): ?>
                     <li class="nav-header">Maintenance</li>
                     <li class="nav-item dropdown">

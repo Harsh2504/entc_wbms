@@ -39,8 +39,8 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 							<div class="col-lg-8 col-md-7 col-sm-12 col-xs-12 py-3 border"><?= isset($address) ? $address : '' ?></div>
 							<div class="col-lg-4 col-md-5 col-sm-12 col-xs-12 py-3 font-weight-bolder border">Meter Code</div>
 							<div class="col-lg-8 col-md-7 col-sm-12 col-xs-12 py-3 border"><?= isset($meter_code) ? $meter_code : '' ?></div>
-							<div class="col-lg-4 col-md-5 col-sm-12 col-xs-12 py-3 font-weight-bolder border">Meter First Reading</div>
-							<div class="col-lg-8 col-md-7 col-sm-12 col-xs-12 py-3 border"><?= isset($first_reading) ? $first_reading : '' ?></div>
+							<!-- <div class="col-lg-4 col-md-5 col-sm-12 col-xs-12 py-3 font-weight-bolder border">Meter First Reading</div>
+							<div class="col-lg-8 col-md-7 col-sm-12 col-xs-12 py-3 border"><?= isset($first_reading) ? $first_reading : '' ?></div> -->
 							<div class="col-lg-4 col-md-5 col-sm-12 col-xs-12 py-3 font-weight-bolder border">Date Created</div>
 							<div class="col-lg-8 col-md-7 col-sm-12 col-xs-12 py-3 border"><?= isset($date_created) ? date("F d, Y", strtotime($date_created)) : '' ?></div>
 							<div class="clear-fix my-1"></div>

@@ -3,8 +3,7 @@
                             <head>
                                 <meta charset='utf-8'>
                                 <meta name='viewport' content='width=device-width, initial-scale=1'>
-                                <title>Payment Gateway</title>
-                                
+                                <title>Payment History</title>
                                 <link href='https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-alpha1/dist/css/bootstrap.min.css' rel='stylesheet'>
                                 <link href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css' rel='stylesheet'>
                                 <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
@@ -220,7 +219,7 @@ function confirmRedirect(phoneNumber) {
 </script>
 
         </div> 
-        <h4>Billing Summary</h4>
+        <h4>Bill Summary</h4>
         <?php
                                   // Retrieve the id value from the URL
                                   $id = $_GET['id'];
@@ -253,6 +252,7 @@ function confirmRedirect(phoneNumber) {
                                       // Fetch and display data
                                       while ($row = $result->fetch_assoc()) {
                                         $billDate = date("F d, Y", strtotime($row['billdate']));
+                                        $paiddate = date("F d, Y", strtotime( $row['paymentdate']));
                                         $meter_code = $row['meter_code'];
                                         $sql_contact = "SELECT contact FROM client_list WHERE meter_code = ?";
                                         $stmt_contact = $dbConnection->prepare($sql_contact);
@@ -274,7 +274,11 @@ function confirmRedirect(phoneNumber) {
                                           echo "<p>Meter Reading: " . $row['unit'] . " units </p>";
                                           echo "<p>Meter Code: " . $row['meter_code'] . "</p>";
                                           echo "</div>";
+                                          echo "<div style='display: flex; justify-content: space-between;'>";
                                           echo "<p>Bill Date: " . $billDate . "</p>";
+                                          echo "<p>Paid Date: " . $paiddate . "</p>";
+                                          echo "</div>";
+                                          echo "<p >Transaction ID: " . $row['transaction'] . "</p>";
                                           echo "<div style='display: flex; justify-content: space-between;'>";
                                           echo "<h5><b>Total Amount</b></h5> ";
                                           echo "<h5><b>₹ " . $row['amount'] . "</b></h5> ";
@@ -366,72 +370,10 @@ if (isset($_POST['payButton'])) {
 
 
 
-        <div class="tabs mt-3"> 
-          <ul class="nav nav-tabs" id="myTab" role="tablist"> 
-            <li class="nav-item" role="presentation"> 
-              <a class="nav-link active" id="visa-tab" data-toggle="tab" href="#visa" role="tab" aria-controls="visa" aria-selected="true">
-                 <img src="https://i.imgur.com/sB4jftM.png" width="80"> </a> 
-            </li> 
-            <li class="nav-item" role="presentation"> 
-              <a class="nav-link" id="paypal-tab" data-toggle="tab" href="#paypal" role="tab" aria-controls="paypal" aria-selected="false"> 
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/UPI-Logo-vector.svg/2560px-UPI-Logo-vector.svg.png" width="80"> </a> 
-            </li> 
-          </ul> 
-          <div class="tab-content" id="myTabContent"> 
-            <div class="tab-pane fade show active" id="visa" role="tabpanel" aria-labelledby="visa-tab"> 
-              <div class="mt-4 mx-4"> 
-                <div class="text-center">
-                 <h5>Debit / Credit Card</h5> 
-                </div> 
-                <div class="form mt-3"> 
-                  <div class="inputbox"> 
-                  <form method="POST" action="">
-                    <input type="text" name="name" class="form-control" required="required"> 
-                    <span>CardHolder Name</span> </div> <div class="inputbox"> 
-                      <input type="text" name="name" min="1" max="999" class="form-control" required="required"> 
-                      <span>Card Number</span> 
-                      <!--<i class="fa fa-eye"></i>-->
-                     </div> 
-                      <div class="d-flex flex-row">
-                         <div class="inputbox"> 
-                          <input type="text" name="name" min="1" max="999" class="form-control" required="required"> 
-                         <span>Expiration Date</span> </div> <div class="inputbox"> 
-                          <input type="text" name="name" min="1" max="999" class="form-control" required="required"> 
-                          <span>CVV</span>
-                          <input type="hidden" name="phone_number" value="<?php echo htmlspecialchars($phone_number); ?>"> 
-                        </div> 
-                      </div> 
-                      <div class="px-5 pay"> 
-                        <button type="submit" name="payButton" class="btn btn-success btn-block">Pay</button> 
-                        </form>
-                      </div> 
-                    </div> 
-                  </div> 
-                </div> 
-
-                <div class="tab-pane fade" id="paypal" role="tabpanel" aria-labelledby="paypal-tab"> 
-                  
-                  <div class="px-5 mt-5">
-                  <div class="text-center">
-                 <h5>UPI Payment</h5> 
-                </div> 
-                     <div class="inputbox"> 
-                     <form method="POST" action="">
-                      <input type="text" name="name" class="form-control" required="required"> 
-                      <span>UPI ID or number</span> </div> <div class="pay px-5"> 
-                      <input type="hidden" name="phone_number" value="<?php echo htmlspecialchars($phone_number); ?>">
-                      <!-- Other form elements -->
-                      <button type="submit" name="payButton" class="btn btn-primary btn-block">Pay</button>
-                        </form>
-                       
-
-                      </div> 
-                    </div> 
-                  </div> 
-                </div> 
-              </div> 
-            </div>
-           </div>
+       
+</div>
+</div>
+          
            </div>
 </div>
 

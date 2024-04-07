@@ -8,15 +8,15 @@
 <div class="card card-outline rounded-0 card-navy">
 	<div class="card-header">
 		<h3 class="card-title">List of Bill</h3>
-		<div class="card-tools">
+		<!-- <div class="card-tools">
 			<a href="./?page=billings/manage_billing" id="create_new" class="btn btn-flat btn-primary"><span
 					class="fas fa-plus"></span> Create New</a>
-		</div>
+		</div> -->
 	</div>
 
 	<div class="card-body">
 		<div class="container-fluid">
-			<table class="table table-hover table-striped table-bordered" id="list">
+			<!-- <table class="table table-hover table-striped table-bordered" id="list">
 				<colgroup>
 					<col width="5%">
 					<col width="10%">
@@ -93,11 +93,127 @@
 						</tr>
 					<?php endwhile; ?>
 				</tbody>
-			</table>
+			</table> -->
+			<?php
+// Assuming $conn is your database connection object
+//db connection 
+$host = 'localhost'; // Your database host
+$dbname = 'wbms_db'; // Your database name
+$username = 'root'; // Your database username
+$password = ''; // Your database password
+
+// Create a new mysqli instance
+//port:3306
+$dbConnection = new mysqli($host, $username, $password, $dbname, 3306);
+
+// Check connection
+if ($dbConnection->connect_error) {
+    die("Connection failed: " . $dbConnection->connect_error);
+}
+
+// Fetch data from pending_bills for all records where paidflag is 1, sorted by bill date
+$sql = "SELECT id, name, unit, amount, billdate, dueDate FROM pending_bills WHERE paidflag = 0 ORDER BY billdate";
+$result = $dbConnection->query($sql);
+
+// Check if there are any matching records
+if ($result->num_rows > 0) {
+    // Initialize serial number
+    $serial = 1;
+    // Display data in a table
+    echo "<table  style='text-align:center;' class='table table-hover table-striped table-bordered' id='list' >";
+    echo "<thead><tr style='text-align:center;'><th>#</th><th>Name</th><th>Unit</th><th>Amount</th><th>Bill Date</th><th>Due Date</th><th>Status</th></tr></thead>";
+    while ($row = $result->fetch_assoc()) {
+        echo "<tr>";
+        // Display serial number
+        echo "<td>" . $serial . "</td>";
+        echo "<td>" . $row['name'] . "</td>";
+        echo "<td>" . $row['unit'] . "</td>";
+        echo "<td>₹ " . $row['amount'] . "</td>";
+        echo "<td>" . $row['billdate'] . "</td>";
+        echo "<td>" . $row['dueDate'] . "</td>";
+        echo "<td style='text-align:center;'>";
+        echo "<span class='badge badge-secondary bg-gradient-secondary text-sm px-3 rounded-pill'>Pending</span>";
+        echo "</td>";
+        // Increment serial number
+        $serial++;
+    }
+    echo "</table>";
+} else {
+    echo "No pending bills found.";
+}
+?>
+
 		</div>
+		
 	</div>
 </div>
+<div class="card card-outline rounded-0 card-navy">
+	<div class="card-header">
+		<h3 class="card-title">Paid List</h3>
+		<!-- <div class="card-tools">
+			<a href="./?page=billings/manage_billing" id="create_new" class="btn btn-flat btn-primary"><span
+					class="fas fa-plus"></span> Create New</a>
+		</div> -->
+	</div>
 
+	<div class="card-body">
+		<div class="container-fluid">
+		<?php
+// Assuming $conn is your database connection object
+//db connection 
+$host = 'localhost'; // Your database host
+$dbname = 'wbms_db'; // Your database name
+$username = 'root'; // Your database username
+$password = ''; // Your database password
+
+// Create a new mysqli instance
+//port:3306
+$dbConnection = new mysqli($host, $username, $password, $dbname, 3306);
+
+// Check connection
+if ($dbConnection->connect_error) {
+    die("Connection failed: " . $dbConnection->connect_error);
+}
+
+// Fetch data from pending_bills for all records where paidflag is 1, sorted by payment date
+$sql = "SELECT id, name, unit, amount, billdate, paymentdate, transaction FROM pending_bills WHERE paidflag = 1 ORDER BY paymentdate";
+$result = $dbConnection->query($sql);
+
+// Check if there are any matching records
+if ($result->num_rows > 0) {
+    // Initialize serial number
+    $serial = 1;
+    // Display data in a table
+    echo "<table  class='table table-hover table-striped table-bordered'  id='list'>";
+    echo "<thead><tr style='text-align:center;'><th>#</th><th>Name</th><th>Unit</th><th>Amount</th><th>Bill Date</th><th>Payment Date</th><th>Transaction ID</th><th>Status</th></tr></thead>";
+    while ($row = $result->fetch_assoc()) {
+        echo "<tr>";
+        // Display serial number
+        echo "<td>" . $serial . "</td>";
+        echo "<td>" . $row['name'] . "</td>";
+        echo "<td>" . $row['unit'] . "</td>";
+        echo "<td>₹ " . $row['amount'] . "</td>";
+        echo "<td>" . $row['billdate'] . "</td>";
+        echo "<td>" . $row['paymentdate'] . "</td>";
+        echo "<td>" . $row['transaction'] . "</td>";
+        echo "<td style='text-align:center;'>";
+        echo "<span class='badge badge-success bg-gradient-success text-sm px-3 rounded-pill'>Paid</span>";
+        echo "</td>";
+        echo "</tr>";
+        // Increment serial number
+        $serial++;
+    }
+    echo "</table>";
+} else {
+    echo "No bills paid yet.";
+}
+?>
+
+
+		</div>
+		
+	</div>
+</div>
 
 <script>
 	$(document).ready(function () {

@@ -37,9 +37,9 @@ if ($result) {
     $meter_code = $row['meter_code'];
     $check_status = $row['status'];
     if ($check_status == 1) {
-      $status = "Active";
+      $status = '<span class="badge badge-primary bg-gradient-primary text-sm px-2 py-1 rounded-pill">Active</span>';
     } else {
-      $status = "Inactive";
+      $status = '<span class="badge badge-danger bg-gradient-danger text-sm px-2 py-1 rounded-pill">Inactive</span>';
     }
   } else {
     echo "No matching records found.";
@@ -407,12 +407,14 @@ $conn->close();
 
         function displayStats($channelData, $feeds)
         {
+       
           echo "
       <div>
 	  <br>
-        <h5>Channel Stats</h5>
-        <p>Last entry: " . date('Y-m-d H:i:s', strtotime($channelData['updated_at'])) . "</p>
-        <p>Entries: {$channelData['last_entry_id']}</p>
+	  <br>
+       
+        <p><b>Last entry:</b> " . date('Y-m-d H:i:s', strtotime($channelData['updated_at'])) . "</p>
+        <p><b>Entries:</b>  {$channelData['last_entry_id']}</p>
       </div>
     ";
 
@@ -421,11 +423,11 @@ $conn->close();
       <table class='table mt-4'>
         <thead>
           <tr>
-            <th>Entry ID</th>
+            <th>#</th>
             <th>Bill</th>
             <th>Units</th>
-            <th>Valve</th>
-            <th>Created At</th>
+            <th>Amount</th>
+            <th>Date & Time</th>
           </tr>
         </thead>
         <tbody>
@@ -449,14 +451,56 @@ $conn->close();
 
         function calculateWaterCost($field2Value)
         {
-          // Convert field2Value to float
-          $waterConsumption = floatval($field2Value);
+            // Convert field2Value to float
+            $waterConsumption = floatval($field2Value);
+            
+     //db connection 
+     $host = 'localhost'; // Your database host
+     $dbname = 'wbms_db'; // Your database name
+     $username = 'root'; // Your database username
+     $password = ''; // Your database password
+     
+     // Create a new mysqli instance
+     //port:3306
+     $dbConnection = new mysqli($host, $username, $password, $dbname, 3306);
 
-          // Multiply waterConsumption by 0.10 (10% rate)
-          $waterCost = $waterConsumption * 0.10;
+     // Check connection
+     if ($dbConnection->connect_error) {
+       die("Connection failed: " . $dbConnection->connect_error);
+     }
 
-          return $waterCost;
+
+            
+            // Prepare and execute a query to fetch the rate from system_info
+            $sql = "SELECT meta_value FROM system_info WHERE meta_field = ?";
+            $stmt = $dbConnection->prepare($sql);
+            $rateField = "rate"; // Assuming the field value for rate is "rate"
+            $stmt->bind_param("s", $rateField);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            
+            // Check if there is a result
+            if ($result->num_rows > 0) {
+                $row = $result->fetch_assoc();
+                $rate = floatval($row['meta_value']); // Convert rate to float
+            } else {
+                // Default rate if no value found
+                $rate = 0.10; // Set a default rate
+            }
+            
+            // Close database connection
+            $stmt->close();
+            $dbConnection->close();
+        
+            // Calculate water cost using the fetched rate
+            $waterCost = $waterConsumption * $rate;
+        
+            // Echo the rate value
+           // echo "Current rate: " . $rate . "<br>";
+        
+            return $waterCost;
         }
+        
 
 
         function createTableRow($feed)
@@ -476,10 +520,16 @@ $conn->close();
       </tr>
     ";
         }
-
+        global $check_status;
         // Call fetchData when the page loads
+        if ($check_status == 1) {
         fetchData();
-
+        }
+        else {
+          echo "<br><br><div class='alert alert-dark' style='text-align:center;' role='alert'>
+          Your water connection has been disabled. Please pay all pending dues. If already paid, please contact the administrator.
+          </div>";
+      }
         ?>
       </div>
     </div>

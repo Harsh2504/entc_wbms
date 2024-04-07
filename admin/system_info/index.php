@@ -68,7 +68,7 @@
 			<fieldset>
 				<legend>Pricing</legend>
 				<div class="form-group col-lg-6 col-md-10 col-sm-12 col-xs-12">
-					<label for="rate" class="control-label">Rate per Cubic Meter (m<sup>3</sup>)</label>
+					<label for="rate" class="control-label">Rate per Unit</label>
 					<input type="text" class="form-control form-control-sm" name="rate" id="rate" value="<?php echo $_settings->info('rate') ?>">
 				</div>
 			</fieldset>

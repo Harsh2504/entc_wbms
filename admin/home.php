@@ -9,7 +9,7 @@
   }
 </style>
 <div class="row">
-    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12" onclick="openCategoriesPage()">
       <div class="info-box">
         <span class="info-box-icon bg-gradient-secondary elevation-1"><i class="fas fa-th-list"></i></span>
         <div class="info-box-content">
@@ -27,7 +27,7 @@
       <!-- /.info-box -->
     </div>
     <!-- /.col -->
-    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12"  onclick="openClientsPage()">
       <div class="info-box">
         <span class="info-box-icon bg-gradient-success elevation-1"><i class="fas fa-users"></i></span>
         <div class="info-box-content">
@@ -45,14 +45,14 @@
       <!-- /.info-box -->
     </div>
     <!-- /.col -->
-    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 pending" onclick="openPendingBillsPage()">
       <div class="info-box">
         <span class="info-box-icon bg-gradient-danger elevation-1"><i class="fas fa-file-invoice"></i></span>
         <div class="info-box-content">
           <span class="info-box-text">Pending Bills</span>
           <span class="info-box-number">
             <?php 
-              $billings = $conn->query("SELECT * FROM billing_list where `status` = 0")->num_rows;
+              $billings = $conn->query("SELECT * FROM pending_bills where `paidflag` = 0")->num_rows;
               echo format_num($billings);
             ?>
             <?php ?>
@@ -68,3 +68,15 @@
 <center>
   <img src="<?= validate_image($_settings->info('cover')) ?>" alt="<?= validate_image($_settings->info('logo')) ?>" id="site-cover" class="img-fluid w-100">
 </center>
+<script>
+    function openPendingBillsPage() {
+        window.location.href = 'http://localhost/entc_wbms/admin/?page=billings';
+    }
+
+    function openClientsPage() {
+        window.location.href = 'http://localhost/entc_wbms/admin/?page=clients';
+    }
+    function openCategoriesPage() {
+        window.location.href = 'http://localhost/entc_wbms/admin/?page=category';
+    }
+</script>

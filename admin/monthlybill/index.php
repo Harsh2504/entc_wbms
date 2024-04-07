@@ -37,9 +37,9 @@ if ($result) {
     $meter_code = $row['meter_code'];
     $check_status = $row['status'];
     if ($check_status == 1) {
-      $status = "Active";
+      $status = '<span class="badge badge-primary bg-gradient-primary text-sm px-2 py-1 rounded-pill">Active</span>';
     } else {
-      $status = "Inactive";
+      $status = '<span class="badge badge-danger bg-gradient-danger text-sm px-2 py-1 rounded-pill">Inactive</span>';
     }
   } else {
     echo "No matching records found.";
@@ -230,145 +230,7 @@ $conn->close();
   <div class="card-header">
     <div class="card-header">
       <h3 class="card-title">Bill Payments</h3>
-      <div id="dataContainer">
-        <!-- Data table will be displayed here -->
-        <?php
 
-
-        function getLastEntriesWithDay30($feeds)
-        {
-          $lastEntries = array();
-
-          // Organize feeds by month
-          foreach ($feeds as $feed) {
-            $createdAt = strtotime($feed['created_at']);
-            $day = date('d', $createdAt);
-            $month = date('m', $createdAt);
-            $year = date('Y', $createdAt);
-            $lastDayOfMonth = date('t', mktime(0, 0, 0, $month, 1, $year)); // Get the last day of the month
-        
-            if ($day == $lastDayOfMonth) {
-              // Store the entry only if it was created on the last day of the month
-              $lastEntries[$month] = array(
-                'created_at' => $feed['created_at'],
-                'entry_id' => $feed['entry_id'],
-                'field1' => $feed['field1'],
-                'field2' => $feed['field2'],
-                'field3' => $feed['field3']
-              );
-            }
-          }
-
-          // Select the last entry for each month
-          $lastEntriesByMonth = array();
-          foreach ($lastEntries as $month => $entry) {
-            $lastEntriesByMonth[$month] = $entry;
-          }
-
-          return $lastEntriesByMonth;
-        }
-
-
-        function fetchData()
-        {
-          $channelID = '2416103';
-          $apiKey = '9Y9MIRGXAAE1BY94';
-          $feedUrl = "https://api.thingspeak.com/channels/{$channelID}/feeds.json?api_key={$apiKey}";
-
-          $response = file_get_contents($feedUrl);
-          $data = json_decode($response, true);
-
-          $jsonData = json_encode($data, JSON_HEX_APOS);
-          $lastEntriesWithDay30 = getLastEntriesWithDay30($data['feeds']);
-
-
-          foreach ($lastEntriesWithDay30 as $entry) {
-            $waterCost = calculateWaterCost($entry['field2']);
-            $vsy = formatIndianCurrency($waterCost);
-            echo "<script>";
-            echo "document.addEventListener('DOMContentLoaded', function() {";
-            echo "    var userChargesDiv = document.querySelector('.usercharges');";
-            echo "    if (userChargesDiv) {";  // Check if userChargesDiv is not null
-            echo "        userChargesDiv.innerHTML += '<strong>Date:</strong><br>';";
-            echo "        userChargesDiv.innerHTML += " . json_encode($entry['created_at'], JSON_PRETTY_PRINT) . ";";
-            echo "        userChargesDiv.innerHTML += '<br><strong>Charges:</strong><br>';";
-            echo "        userChargesDiv.innerHTML += " . json_encode($vsy, JSON_PRETTY_PRINT) . ";";
-            
-            echo "        userChargesDiv.innerHTML += '<br><br>';";
-            echo "    } else {";
-            echo "        console.error('Element with class name \"usercharges\" not found.');";
-            echo "    }";
-            echo "});";
-            echo "</script>";
-        }
-        
-
-
-          // $waterCost = calculateWaterCost($lastEntriesWithDay30['02']['field2']);
-          // $vsy = formatIndianCurrency($waterCost);
-          // echo "<script>";
-          // echo "document.addEventListener('DOMContentLoaded', function() {";
-          // echo "    var userChargesDiv = document.querySelector('.usercharges');";
-          // echo "    if (userChargesDiv) {";  // Check if userChargesDiv is not null
-          // echo "        userChargesDiv.innerHTML += '<strong>Date:</strong><br>';";
-          // echo "        userChargesDiv.innerHTML += " . json_encode($lastEntriesWithDay30['02']['created_at'], JSON_PRETTY_PRINT) . ";";
-          // echo "        userChargesDiv.innerHTML += '<br><strong>Charges:</strong><br>';";
-          // echo "        userChargesDiv.innerHTML += " . json_encode($vsy, JSON_PRETTY_PRINT) . ";";
-          // echo "    } else {";
-          // echo "        console.error('Element with class name \"usercharges\" not found.');";
-          // echo "    }";
-          // echo "});";
-          // echo "</script>";
-
-
-
-
-        }
-
-
-
-        function formatIndianCurrency($value)
-        {
-          $formattedValue = number_format($value);
-          return "₹{$formattedValue}";
-        }
-
-        function calculateWaterCost($field2Value)
-        {
-          // Convert field2Value to float
-          $waterConsumption = floatval($field2Value);
-
-          // Multiply waterConsumption by 0.10 (10% rate)
-          $waterCost = $waterConsumption * 0.10;
-
-          return $waterCost;
-        }
-
-
-        function createTableRow($feed)
-        {
-          $createdAt = date('Y-m-d H:i:s', strtotime($feed['created_at']));
-          $field2Value = isset($feed['field2']) ? trim($feed['field2']) : '';
-          $waterCost = calculateWaterCost($field2Value);
-          $formattedWaterCost = formatIndianCurrency($waterCost);
-
-          return "
-      <tr>
-        <td>{$feed['entry_id']}</td>
-        <td>{$feed['field1']}</td>
-        <td>{$field2Value}</td>
-        <td>{$formattedWaterCost}</td>
-        <td>{$createdAt}</td>
-      </tr>
-    ";
-        }
-
-        // Call when the page loads
-        fetchData();
-
-        ?>
-
-      </div>
       <br>
       <br>
       <!-- <div class="usercharges">
@@ -403,13 +265,15 @@ $stmt->close();
 // Check if there are any matching records
 if ($result->num_rows > 0) {
     // Display data in a table
-    echo "<table  class='table mt-4'>";
-    echo "<tr><th>Name</th><th>Unit</th><th>Amount</th><th>Bill Date</th><th>Due Date</th><th>Payment</th></tr>";
+    $serial = 1;
+    echo "<table  class='table mt-4 ' id='list'> ";
+    echo "<thead><tr><th>#</th><th>Name</th><th>Unit</th><th>Amount</th><th>Bill Date</th><th>Due Date</th><th> </th></tr></thead>";
     while ($row = $result->fetch_assoc()) {
         echo "<tr>";
+        echo "<td>" . $serial . "</td>";
         echo "<td>" . $row['name'] . "</td>";
         echo "<td>" . $row['unit'] . "</td>";
-        echo "<td>" . $row['amount'] . "</td>";
+        echo "<td>₹ " . $row['amount'] . "</td>";
         echo "<td>" . $row['billdate'] . "</td>";
         echo "<td>" . $row['dueDate'] . "</td>";
         // Adding pay button with a form to pass ID
@@ -420,6 +284,7 @@ if ($result->num_rows > 0) {
         echo "</form>";
         echo "</td>";
         echo "</tr>";
+        $serial++;
     }
     echo "</table>";
 } else {
@@ -429,6 +294,7 @@ if ($result->num_rows > 0) {
 
 
       </div>
+      
       <div>
 
    
@@ -438,7 +304,80 @@ if ($result->num_rows > 0) {
   </div>
 
 </div>
+<!-- Harsh -->
+<div class="card card-outline rounded-0 card-navy">
+  <div class="card-header">
+    <div class="card-header">
+      <h3 class="card-title">Payment History</h3>
+      <br>
+      <br>
+      <div class="bills">
+      <?php
+// Assuming $conn is your database connection object
+//db connection 
+$host = 'localhost'; // Your database host
+$dbname = 'wbms_db'; // Your database name
+$username = 'root'; // Your database username
+$password = ''; // Your database password
 
+// Create a new mysqli instance
+//port:3306
+$dbConnection = new mysqli($host, $username, $password, $dbname, 3306);
+
+// Check connection
+if ($dbConnection->connect_error) {
+    die("Connection failed: " . $dbConnection->connect_error);
+}
+
+// Fetch data from pending_bills for a specific fullname where paidflag is 0
+$sql = "SELECT id, name, unit, amount, billdate, dueDate, paymentdate FROM pending_bills WHERE name = ? AND paidflag = 1";
+$stmt = $dbConnection->prepare($sql);
+$stmt->bind_param("s", $fullname);
+$stmt->execute();
+$result = $stmt->get_result();
+$stmt->close();
+$serial = 1;
+// Check if there are any matching records
+if ($result->num_rows > 0) {
+    // Display data in a table
+    echo "<table  class='table mt-4 dataTable'>";
+    echo "<tr><th>#</th><th>Name</th><th>Unit</th><th>Amount</th><th>Bill Date</th><th>Payment Date</th><th>Receipt </th></tr>";
+    while ($row = $result->fetch_assoc()) {
+        echo "<tr>";
+        echo "<td>" . $serial . "</td>";
+        echo "<td>" . $row['name'] . "</td>";
+        echo "<td>" . $row['unit'] . "</td>";
+        echo "<td>₹ " . $row['amount'] . "</td>";
+        echo "<td>" . $row['billdate'] . "</td>";
+        echo "<td>" . $row['paymentdate'] . "</td>";
+        // Adding pay button with a form to pass ID
+        echo "<td>";
+        echo "<form id='paymentForm_" . $row['id'] . "' method='POST' action='http://localhost/entc_wbms/admin/monthlybill/payment_history.php?id=" . $row['id'] . "'>";
+        echo "<input type='hidden' name='id' value='" . $row['id'] . "' />";
+        echo "<button type='submit' class='btn btn-outline-primary'><i class='fa fa-eye'></i> View</button>";
+        echo "</form>";
+        echo "</td>";
+        echo "</tr>";
+        $serial++;
+    }
+    echo "</table>";
+} else {
+    echo "No bills paid yet. Please pay the pending dues as soon as possible.";
+}
+?>
+
+
+      </div>
+      
+      <div>
+
+   
+      </div>
+    </div>
+
+  </div>
+
+</div>
 <div>
 
 </div>
