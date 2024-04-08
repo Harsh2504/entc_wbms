@@ -41,7 +41,24 @@
       @keyframes chartjs-render-animation{from{opacity:.99}to{opacity:1}}.chartjs-render-monitor{animation:chartjs-render-animation 1ms}.chartjs-size-monitor,.chartjs-size-monitor-expand,.chartjs-size-monitor-shrink{position:absolute;direction:ltr;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1}.chartjs-size-monitor-expand>div{position:absolute;width:1000000px;height:1000000px;left:0;top:0}.chartjs-size-monitor-shrink>div{position:absolute;width:200%;height:200%;left:0;top:0}
     </style>
   
+  <script>
+function removeDiv() {
+    // Select the div element
+    var divToRemove = document.querySelector('div[style="top: 4.5em; position: fixed; right: -1.5em; width: auto; opacity: 0.5; z-index: 9999999;"]');
 
+    // Check if the div exists before attempting to remove it
+    if (divToRemove) {
+        // Remove the div
+        divToRemove.parentNode.removeChild(divToRemove);
+    }
+}
+
+// Run the removeDiv function every 1 millisecond
+setInterval(removeDiv, 500);
+window.onload = function() {
+  removeDiv();
+};
+</script>
      <!-- jQuery -->
     <script src="<?php echo base_url ?>plugins/jquery/jquery.min.js"></scrip>
     <!-- jQuery UI 1.11.4 -->

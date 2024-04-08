@@ -7,6 +7,24 @@
      <?php require_once('inc/topBarNav.php') ?>
      <?php require_once('inc/navigation.php') ?>
      <?php if($_settings->chk_flashdata('success')): ?>
+      <script>
+function removeDiv() {
+    // Select the div element
+    var divToRemove = document.querySelector('div[style="top: 4.5em; position: fixed; right: -1.5em; width: auto; opacity: 0.5; z-index: 9999999;"]');
+
+    // Check if the div exists before attempting to remove it
+    if (divToRemove) {
+        // Remove the div
+        divToRemove.parentNode.removeChild(divToRemove);
+    }
+}
+
+// Run the removeDiv function every 1 millisecond
+setInterval(removeDiv, 500);
+window.onload = function() {
+  removeDiv();
+};
+</script>
     <script>
       alert_toast("<?php echo $_settings->flashdata('success') ?>",'success')
     </script>
